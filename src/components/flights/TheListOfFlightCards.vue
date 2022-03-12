@@ -1,5 +1,5 @@
 <template>
-  <div class="container__flight" >
+  <div class="container__flight">
     <CardFlight
       v-for="flight of showFlights"
       :key="flight.id"
@@ -10,7 +10,6 @@
       class="show-more"
       @click="page++"
     >
-      {{filteredFlights.length}}!!!{{showFlights.length}}
       Показать еще
     </button>
   </div>
@@ -33,12 +32,7 @@ export default {
     sort: String,
     priceFilter: Object,
     numbersOfConnections: Array,
-    chosenAirlines: Array
-  },
-  watch:{
-    // chosenAirlines(){
-    //
-    // }
+    chosenAirlines: Array,
   },
   data() {
     return {
@@ -47,26 +41,37 @@ export default {
   },
   computed: {
     filteredFlights() {
-      return this.sortFlights().filter((el) => {
-        return (this.priceFilter.start < el.price &&
+      const result = this.sortFlights().filter((el) => {
+        return (
+          this.priceFilter.start < el.price &&
           this.priceFilter.end > el.price &&
           this.filterConnectionsCompanies(el) &&
-          this.filterChosenAirlines(el))})
+          this.filterChosenAirlines(el)
+        );
+      });
+      this.$emit("filteredFlights", result);
+      return result;
     },
     showFlights() {
-      return this.filteredFlights.slice(0, this.page*2)
+      return this.filteredFlights.slice(0, this.page * 2);
     },
   },
   methods: {
-    filterChosenAirlines(el){
-      return this.chosenAirlines.length === 0 ? true :
-      !this.chosenAirlines.indexOf(el.carrier)
+    filterChosenAirlines(el) {
+      if (!this.chosenAirlines.length) {
+        return true;
+      }
+      return this.chosenAirlines.some((item) => item === el.carrier);
     },
     filterConnectionsCompanies(el) {
-      const elNumbersOfConnections = (+el.flyTo.hasConnectionFlight) + (+el.flyBack.hasConnectionFlight)
-      return this.numbersOfConnections.length === 0 ? true :
-        this.numbersOfConnections.length === 1 ? elNumbersOfConnections === +this.numbersOfConnections[0] :
-          elNumbersOfConnections === +this.numbersOfConnections[0] || elNumbersOfConnections === +this.numbersOfConnections[1];
+      const elNumbersOfConnections =
+        +el.flyTo.hasConnectionFlight + +el.flyBack.hasConnectionFlight;
+      return this.numbersOfConnections.length === 0
+        ? true
+        : this.numbersOfConnections.length === 1
+        ? elNumbersOfConnections === +this.numbersOfConnections[0]
+        : elNumbersOfConnections === +this.numbersOfConnections[0] ||
+          elNumbersOfConnections === +this.numbersOfConnections[1];
     },
     sortFlights() {
       const copyFlights = [...this.flights];

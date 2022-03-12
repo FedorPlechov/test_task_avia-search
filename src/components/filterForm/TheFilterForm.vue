@@ -4,60 +4,90 @@
       <div class="container__sort">
         <h3>Сортировать</h3>
         <label
-        ><input
-          checked
-          type="radio"
-          name="sort"
-          value="increase"
-          @input="$emit('sort', $event.target.value)"
-        />
+          ><input
+            checked
+            type="radio"
+            name="sort"
+            value="increase"
+            @input="$emit('sort', $event.target.value)"
+          />
           - по возврастанию цены</label
         >
         <label
-        ><input
-          type="radio"
-          name="sort"
-          value="decrease"
-          @input="$emit('sort', $event.target.value)"
-        />
+          ><input
+            type="radio"
+            name="sort"
+            value="decrease"
+            @input="$emit('sort', $event.target.value)"
+          />
           - по убыванию цены</label
         >
         <label
-        ><input
-          type="radio"
-          name="sort"
-          value="duration"
-          @input="$emit('sort', $event.target.value)"
-        />
+          ><input
+            type="radio"
+            name="sort"
+            value="duration"
+            @input="$emit('sort', $event.target.value)"
+          />
           - по времени в пути</label
         >
       </div>
       <div class="container__filter-flights">
         <h3>Фильтровать</h3>
-        <label><input type="checkbox" name="one" value="1" v-model="numbersOfConnections"
-                      @change="$emit('filterConnections', numbersOfConnections)"
-                       /> - 1 пересадка</label>
-        <label><input type="checkbox" name="zero" value="0"  v-model="numbersOfConnections"
-                      @change="$emit('filterConnections', numbersOfConnections)"
-                       /> - без пересадок</label>
+
+        <label v-if="isShowCheckboxOne"
+          ><input
+            type="checkbox"
+            name="one"
+            value="1"
+            v-model="numbersOfConnections"
+            @change="$emit('filterConnections', numbersOfConnections)"
+          />
+          - 1 пересадка</label
+        >
+        <div v-else class="empty"></div>
+
+        <label v-if="isShowCheckboxZero"
+          ><input
+            type="checkbox"
+            name="zero"
+            value="0"
+            v-model="numbersOfConnections"
+            @change="$emit('filterConnections', numbersOfConnections)"
+          />
+          - без пересадок</label
+        >
+        <div v-else class="empty"></div>
       </div>
     </div>
     <div class="container__mobile column">
       <div class="container__price">
         <h3>Цена</h3>
-        <label>От <input type="number" v-model="startPrice"
-                         @input="$emit('startPrice',startPrice)" /></label>
-        <label>До <input type="number"
-                         v-model="endPrice"
-                         @input="$emit('endPrice',endPrice)" /></label>
+        <label
+          >От
+          <input
+            type="number"
+            v-model="startPrice"
+            @input="$emit('startPrice', startPrice)"
+        /></label>
+        <label
+          >До
+          <input
+            type="number"
+            v-model="endPrice"
+            @input="$emit('endPrice', endPrice)"
+        /></label>
       </div>
       <div class="container__companies">
         <h3>Авиакомпании</h3>
         <label v-for="airline of showAirlines" :key="airline.carrier"
-        ><input type="checkbox"
-                :value="airline.carrier"
-                v-model="airlines"
-                @change="$emit('airlineFilter', airlines)"/> - {{ airline.carrier }} от {{ airline.price }} р.</label
+          ><input
+            type="checkbox"
+            :value="airline.carrier"
+            v-model="chosenAirlines"
+            @change="$emit('airlineFilter', chosenAirlines)"
+          />
+          - {{ airline.carrier }} от {{ airline.price }} р.</label
         >
       </div>
     </div>
@@ -67,23 +97,47 @@
 <script>
 export default {
   name: "TheFilterForm",
-  props: ["allAirlines"],
+  props: ["allAirlines", "filteredFlights"],
   data() {
     return {
       startPrice: 0,
       endPrice: 1000000,
       numbersOfConnections: [],
-      airlines: []
+      chosenAirlines: [],
     };
   },
   computed: {
-    isShowCheckboxOneConnection(){
-      return false
-    },
     showAirlines() {
       return this.allAirlines;
-    }
-  }
+    },
+    allNumbersOfConnections() {
+      return this.filteredFlights
+        .filter((el) => {
+          return this.filterChosenAirlines(el);
+        })
+        .map((el) => {
+          return el.flyTo.hasConnectionFlight + el.flyBack.hasConnectionFlight;
+        });
+    },
+    isShowCheckboxOne() {
+      return this.allNumbersOfConnections.some((el) => {
+        return el === 1;
+      });
+    },
+    isShowCheckboxZero() {
+      return this.allNumbersOfConnections.some((el) => {
+        return el === 0;
+      });
+    },
+  },
+  methods: {
+    filterChosenAirlines(el) {
+      if (!this.chosenAirlines.length) {
+        return true;
+      }
+      return this.chosenAirlines.some((item) => item === el.carrier);
+    },
+  },
 };
 </script>
 
@@ -150,8 +204,7 @@ export default {
   flex-direction: column;
   padding: 5px 0 0 2px;
   @media (max-width: 45rem) {
-    padding: 0;
-    padding-left: 10px;
+    padding: 0 0 0 10px;
     width: 65%;
     flex-direction: row;
     justify-content: center;
@@ -175,6 +228,10 @@ export default {
       width: 65%;
     }
   }
+}
+.empty {
+  height: 17px;
+  width: 100%;
 }
 
 .container__companies {
