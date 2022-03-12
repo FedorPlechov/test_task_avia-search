@@ -9,7 +9,7 @@
   <OneFlight :flight-inform="flight.flyTo" />
   <div class="border"></div>
   <OneFlight :flight-inform="flight.flyBack" />
-  <button class="choose-button" @click="chooseFlight">ВЫБРАТЬ</button>
+  <button class="choose-button" @click="chooseFlight(flight)">ВЫБРАТЬ</button>
 </template>
 
 <script>
@@ -27,8 +27,8 @@ export default {
     },
   },
   methods: {
-    chooseFlight() {
-      alert("Рейс выбран");
+    chooseFlight(flight) {
+      alert(`Рейс выбран id: ${flight.id}`);
     },
   },
 };
