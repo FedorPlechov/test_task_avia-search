@@ -102,7 +102,6 @@ export default {
 <style lang="scss" scoped>
 .container__flight {
   width: 73%;
-  height: 20%;
   display: flex;
   flex-direction: column;
   margin-right: 25px;
