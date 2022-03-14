@@ -87,7 +87,7 @@
             v-model="chosenAirlines"
             @change="$emit('airlineFilter', chosenAirlines)"
           />
-          - {{ airline.carrier }} от {{ airline.price }} р.</label
+          - {{ airline.showCarrier }} от {{ airline.price }} р.</label
         >
       </div>
     </div>
@@ -108,7 +108,13 @@ export default {
   },
   computed: {
     showAirlines() {
-      return this.allAirlines;
+      return this.allAirlines.map(el => {
+        return {
+        ... el,
+          showCarrier : el.carrier.length > 19? this.setShortStringCarrier(el) : el.carrier,
+        }
+
+      });
     },
     allNumbersOfConnections() {
       return this.filteredFlights
@@ -131,6 +137,11 @@ export default {
     },
   },
   methods: {
+    setShortStringCarrier(el) {
+      let string = el.carrier.split("");
+      string.length = 14;
+      return string.join("") + "....";
+    },
     filterChosenAirlines(el) {
       if (!this.chosenAirlines.length) {
         return true;

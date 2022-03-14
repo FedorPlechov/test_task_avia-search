@@ -51,10 +51,7 @@ export default {
       const companies = this.flights
         .map((el) => {
           return {
-            carrier:
-              el.carrier.length > 19
-                ? this.setShortStringCarrier(el)
-                : el.carrier,
+            carrier: el.carrier,
             price: el.price,
             numbersOfConnections:
               +el.flyTo.hasConnectionFlight + +el.flyBack.hasConnectionFlight,
@@ -74,11 +71,6 @@ export default {
     },
   },
   methods: {
-    setShortStringCarrier(el) {
-      let string = el.carrier.split("");
-      string.length = 14;
-      return string.join("") + "....";
-    },
     sortCompanies(arr) {
       if (this.sort === "increase") {
         return arr.sort((a, b) => {
