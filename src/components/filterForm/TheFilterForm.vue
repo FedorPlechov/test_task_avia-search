@@ -80,7 +80,7 @@
       </div>
       <div class="container__companies">
         <h3>Авиакомпании</h3>
-        <label v-for="airline of showAirlines" :key="airline.carrier"
+        <label v-for="airline of allAirlines" :key="airline.carrier"
           ><input
             type="checkbox"
             :value="airline.carrier"
@@ -107,15 +107,6 @@ export default {
     };
   },
   computed: {
-    showAirlines() {
-      return this.allAirlines.map(el => {
-        return {
-        ... el,
-          showCarrier : el.carrier.length > 19? this.setShortStringCarrier(el) : el.carrier,
-        }
-
-      });
-    },
     allNumbersOfConnections() {
       return this.filteredFlights
         .filter((el) => {
@@ -137,11 +128,6 @@ export default {
     },
   },
   methods: {
-    setShortStringCarrier(el) {
-      let string = el.carrier.split("");
-      string.length = 14;
-      return string.join("") + "....";
-    },
     filterChosenAirlines(el) {
       if (!this.chosenAirlines.length) {
         return true;

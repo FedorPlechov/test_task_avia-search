@@ -56,6 +56,7 @@ export default {
             numbersOfConnections:
               +el.flyTo.hasConnectionFlight + +el.flyBack.hasConnectionFlight,
             duration: el.flyTo.duration + el.flyBack.duration,
+            showCarrier : el.carrier.length > 19? this.setShortStringCarrier(el) : el.carrier,
           };
         })
         .filter((el) => {
@@ -71,6 +72,11 @@ export default {
     },
   },
   methods: {
+    setShortStringCarrier(el) {
+      let string = el.carrier.split("");
+      string.length = 14;
+      return string.join("") + "....";
+    },
     sortCompanies(arr) {
       if (this.sort === "increase") {
         return arr.sort((a, b) => {
@@ -112,7 +118,7 @@ export default {
         const segmentsTo = el.flight.legs[0].segments;
         const segmentsBack = el.flight.legs[1].segments;
         arr.push({
-          id: Date.now() * Math.random(),
+          id: el.flightToken,
           carrier: el.flight.carrier.caption,
           price: el.flight.price.total.amount,
           flyTo: {
